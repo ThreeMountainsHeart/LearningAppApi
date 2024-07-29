@@ -1,19 +1,20 @@
 package com.example.learning_api.entity.sql.database;
 
-import com.example.learning_api.enums.DiscussionStatus;
 import com.example.learning_api.enums.FaqSourceType;
+import com.example.learning_api.enums.ForumStatus;
 import com.example.learning_api.enums.RoleEnum;
 import jakarta.persistence.Id;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
 @Data
 @NoArgsConstructor
-@Document(collection = "discussions")
-public class DiscussionEntity {
+@Document(collection = "forum")
+public class ForumEntity {
     @Id
     private String id;
     private String title;
@@ -21,9 +22,9 @@ public class DiscussionEntity {
     private String authorId;
     private List<SourceDto> sources;
     private List<String> tags;
-    private DiscussionStatus status;
-    private int upvote;
-    private int downvote;
+    private ForumStatus status;
+    @DBRef
+    private List<VoteEntity> votes;
     private int commentCount;
     private RoleEnum role;
     private String parentId;
