@@ -76,7 +76,7 @@ public class TestService implements ITestService {
             if (classRoomRepository.findById(body.getClassroomId()).isEmpty()){
                 throw new IllegalArgumentException("ClassroomId is not found");
             }
-            if (body.getAttemptLimit()==0){
+            if (body.getAttemptLimit()==null){
                 throw new IllegalArgumentException("AttemptLimit is required");
             }
             CreateTestResponse resData = new CreateTestResponse();
@@ -96,9 +96,9 @@ public class TestService implements ITestService {
                 );
                 testEntity.setSource(imageUploaded.getUrl());
             }
-            testEntity.setCreatedAt(new Date());
+            testEntity.setCreatedAt(String.valueOf(System.currentTimeMillis()));
 
-            testEntity.setUpdatedAt(new Date());
+            testEntity.setUpdatedAt(String.valueOf(System.currentTimeMillis()));
             testRepository.save(testEntity);
             resData.setTeacherId(body.getTeacherId());
             resData.setCreatedAt(testEntity.getCreatedAt().toString());
@@ -113,7 +113,12 @@ public class TestService implements ITestService {
             resData.setClassroomId(body.getClassroomId());
             resData.setShowResultType(body.getShowResultType());
             resData.setStatus(body.getStatus());
-            resData.setAttemptLimit(body.getAttemptLimit());
+            if (body.getAttemptLimit()==null){
+                resData.setAttemptLimit(1);
+            }
+            else{
+                resData.setAttemptLimit(body.getAttemptLimit());
+            }
             return resData;
 
         }
@@ -133,7 +138,7 @@ public class TestService implements ITestService {
             if (testEntity==null){
                 throw new IllegalArgumentException("TestId is not found");
             }
-            testEntity.setUpdatedAt(new Date());
+            testEntity.setUpdatedAt(String.valueOf(System.currentTimeMillis()));
             if (body.getName()!=null){
                 testEntity.setName(body.getName());
             }
@@ -213,7 +218,12 @@ public class TestService implements ITestService {
             List<GetTestsResponse.TestResponse> testResponses = new ArrayList<>();
             for (TestEntity testEntity : testEntities){
                 GetTestsResponse.TestResponse testResponse = modelMapperService.mapClass(testEntity, GetTestsResponse.TestResponse.class);
-                testResponse.setAttemptLimit(testEntity.getAttemptLimit());
+                if (testEntity.getAttemptLimit()==null){
+                    testResponse.setAttemptLimit(1);
+                }
+                else{
+                    testResponse.setAttemptLimit(testEntity.getAttemptLimit());
+                }
                 testResponses.add(testResponse);
             }
             resData.setTests(testResponses);
@@ -331,8 +341,8 @@ public class TestService implements ITestService {
         answer.setContent(answerText);
         answer.setQuestionId(questionId);
         answer.setSource("");
-        answer.setCreatedAt(new Date());
-        answer.setUpdatedAt(new Date());
+        answer.setCreatedAt(String.valueOf(System.currentTimeMillis()));
+        answer.setUpdatedAt(String.valueOf(System.currentTimeMillis()));
         answer.setCorrect(isCorrect);
         return answer;
     }
@@ -371,7 +381,13 @@ public class TestService implements ITestService {
         response.setDuration(testEntity.getDuration());
         response.setSource(testEntity.getSource());
         response.setTeacherId(testEntity.getTeacherId());
-        response.setAttemptLimit(testEntity.getAttemptLimit());
+        if (testEntity.getAttemptLimit()==null){
+            response.setAttemptLimit(1);
+        }
+        else{
+
+            response.setAttemptLimit(testEntity.getAttemptLimit());
+        }
         response.setStartTime(Optional.ofNullable(testEntity.getStartTime()).map(Object::toString).orElse(null));
         response.setEndTime(Optional.ofNullable(testEntity.getEndTime()).map(Object::toString).orElse(null));
         response.setShowResultType(testEntity.getShowResultType().toString());
@@ -412,6 +428,12 @@ public class TestService implements ITestService {
             List<GetTestsResponse.TestResponse> testResponses = new ArrayList<>();
             for (TestEntity testEntity : testEntities){
                 GetTestsResponse.TestResponse testResponse = modelMapperService.mapClass(testEntity, GetTestsResponse.TestResponse.class);
+                if (testEntity.getAttemptLimit()==null){
+                    testResponse.setAttemptLimit(1);
+                }
+                else{
+                    testResponse.setAttemptLimit(testEntity.getAttemptLimit());
+                }
                 testResponses.add(testResponse);
             }
             resData.setTests(testResponses);
