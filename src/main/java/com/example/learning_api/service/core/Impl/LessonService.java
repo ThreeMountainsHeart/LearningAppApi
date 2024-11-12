@@ -10,6 +10,7 @@ import com.example.learning_api.service.common.ModelMapperService;
 import com.example.learning_api.service.core.ILessonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -38,8 +39,8 @@ public class LessonService implements ILessonService {
             LessonEntity lessonEntity = modelMapperService.mapClass(createLessonRequest, LessonEntity.class);
             Integer index = lessonRepository.findMaxIndexBySectionId(createLessonRequest.getSectionId());
             lessonEntity.setIndex(index==null?0:index+1);
-            lessonEntity.setCreatedAt(new Date());
-            lessonEntity.setUpdatedAt(new Date());
+            lessonEntity.setCreatedAt(String.valueOf(System.currentTimeMillis()));
+            lessonEntity.setUpdatedAt(String.valueOf(System.currentTimeMillis()));
             lessonRepository.save(lessonEntity);
 
         }
@@ -57,7 +58,7 @@ public class LessonService implements ILessonService {
                 lessonEntity.setName(updateLessonRequest.getName());
             if (updateLessonRequest.getDescription()!=null)
                 lessonEntity.setDescription(updateLessonRequest.getDescription());
-            lessonEntity.setUpdatedAt(new Date());
+            lessonEntity.setUpdatedAt(String.valueOf(System.currentTimeMillis()));
             lessonRepository.save(lessonEntity);
         }
         catch (Exception e){
@@ -95,7 +96,7 @@ public class LessonService implements ILessonService {
     @Override
     public List<GetLessonDetailResponse> getLessonBySectionId(String sectionId) {
         try{
-            List<LessonEntity> lessonEntities = lessonRepository.findBySectionId(sectionId);
+            List<LessonEntity> lessonEntities = lessonRepository.findBySectionId(sectionId, Sort.by(Sort.Direction.ASC, "index"));
             List<GetLessonDetailResponse> getLessonDetailResponses = new ArrayList<>();
             for (LessonEntity lessonEntity: lessonEntities){
                 getLessonDetailResponses.add(lessonRepository.getLessonWithResourcesAndMediaAndSubstances(lessonEntity.getId()));
