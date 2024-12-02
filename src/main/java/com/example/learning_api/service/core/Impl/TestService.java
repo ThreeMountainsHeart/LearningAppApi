@@ -716,8 +716,16 @@ public class TestService implements ITestService {
                     });
             if (studentAnswer.getAnswerId() != null)
                 questionAndAnswer.getAnswers().add(studentAnswer.getAnswerId());
-            else
-                questionAndAnswer.getTextAnswers().add(studentAnswer.getTextAnswer());
+            else{
+                if (questionAndAnswer.getTextAnswers()!=null){
+                    questionAndAnswer.getTextAnswers().add(studentAnswer.getTextAnswer());
+                }
+                else{
+                    questionAndAnswer.setTextAnswers(new ArrayList<>());
+                    questionAndAnswer.getTextAnswers().add(studentAnswer.getTextAnswer());
+                }
+
+            }
         }
         TestSubmitRequest request = new TestSubmitRequest();
         request.setTestResultId(testResult.getId());
@@ -774,6 +782,9 @@ public class TestService implements ITestService {
                         answerResponse.setContent(textAnswers.get(count++));
                         answerResponse.setId(null);
 
+                    }else if (count>=textAnswers.size()){
+                        answerResponse.setContent("");
+                        answerResponse.setId(null);
                     }
                     continue;
                 }
@@ -848,10 +859,15 @@ public class TestService implements ITestService {
             int questionIndex,
             TestResultEntity testResult) {
         List<TestSubmitResponse.AnswerResponse> answerResponses = new ArrayList<>();
+        List<String> submittedTextAnswers;
+        if (body.getQuestionAndAnswers().get(questionIndex).getTextAnswers()!=null){
+            submittedTextAnswers = body.getQuestionAndAnswers().size() > questionIndex
+                    ? body.getQuestionAndAnswers().get(questionIndex).getTextAnswers()
+                    : Collections.emptyList();
+        }else{
+            submittedTextAnswers = new ArrayList<>();
+        }
 
-        List<String> submittedTextAnswers = body.getQuestionAndAnswers().size() > questionIndex
-                ? body.getQuestionAndAnswers().get(questionIndex).getTextAnswers()
-                : Collections.emptyList();
 
         // For TEXT_ANSWER and FILL_IN_THE_BLANK, we'll check against the expected answers
         boolean isQuestionCorrect = false;
