@@ -16,15 +16,11 @@ public class CreateTestRequest {
     private String description;
     @NotNull
     private String classroomId;
+    private String lessonId;
     @NotBlank
     private String teacherId;
     @NotBlank
     private int duration;
-    @NotBlank
-    private String startTime;
-    @NotBlank
-    private String endTime;
-    @NotBlank
     private MultipartFile source;
     @NotBlank
     private String showResultType;
@@ -36,4 +32,6 @@ public class CreateTestRequest {
     private String Status;
     @NotBlank
     private Integer attemptLimit;
+
+    private Double passingGrade;
 }
